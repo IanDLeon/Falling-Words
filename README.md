@@ -1,5 +1,6 @@
 # Falling-Words
 
+<<<<<<< HEAD
 # Start up screen: Background of ASCII falling from the top of the page with instructions on how to play, and the play button.
 
 # Once you are in game I would like to have a 3 sec timer to get the user ready.
@@ -9,3 +10,5 @@
 # When the words fall the user will have to type them out, once they are typed out they should disappear from the screen. 
 
 # Add a health bar, every time the words hit the bottom player loses 10% of health. 
+=======
+>>>>>>> 089d2b15047de422581d964e32279d5d2cb8e142
