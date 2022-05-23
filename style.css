@@ -1,0 +1,22 @@
+body {
+  align-content: center;
+}
+
+
+
+.text-container {
+  display:inline-block;
+  position: relative;
+  z-index: 1;
+}
+
+.main-container {
+  display: inline-block;
+  position:absolute;
+  color:white;
+  z-index: 2;
+  left:0;
+  right: 0;
+  font-size: 22px;
+  
+}
