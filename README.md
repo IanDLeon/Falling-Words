@@ -24,6 +24,11 @@
  * The user to beat the game.
  * Get better at typing.
  * Have Fun!!
+
+# Made with 
+ * HTML
+ * CSS
+ * JavaScript 
  
 =======
 >>>>>>> 089d2b15047de422581d964e32279d5d2cb8e142
