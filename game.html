@@ -1,36 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html class="no-js" lang="en">
+
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Word Game</title>
   <link rel="stylesheet" href="game.css">
-  <title>Game</title>
 </head>
+
 <body>
 
-  <div class="main-container">
-    
-    <div class="text-container">
-      <h1>5</h1>
-    </div>
-
-    <div class="video-container">
-      <div class="color-overlay"></div>
-    <video autoplay loop muted>
-      <source src="Video/pexels-rostislav-uzunov-6151238.mp4" type="video/mp4">
-    </video>
-  </div>
-  
-  <div class="footer">
-    <aside id="btm-left"><h2 id="score">0</h2></aside>
-    <aside id="btm-right"><h3 id="status">Life 5</h3></aside>
+  <div id="page">
+    <canvas id="cvs" width="1668" height="858">
+      Your browser does not support the HTML 5 Canvas.
+    </canvas>
   </div>
 
-  
-
-
+  <div class="menu">
+    <h1 class="menu-text text-center" id="menu-text">
+      <strong>Word</strong> Game -- Press SPACEBAR to play --
+    </h1>
   </div>
-  
+  <div class="menu2">
+    <h3 class="menu-text text-center" id="menu-text">
+      Type the words as they fall. Don't let them reach the bottom!
+    </h3>
+  </div>
+  <div class="menu3">
+    <h3 class="menu-text text-center" id="menu-text">
+      'MODIFIER' will select one random modifier. These could be positive or negative.
+    </h3>
+  </div>
+  <div class="menu4">
+    <h3 class="menu-text text-center" id="menu-text">
+      As you collect 'CLEARS' press SPACEBAR to use them. These will clear all modifiers.
+    </h3>
+  </div>
+
+
+  <script src="words.js"></script>
+  <script src="app.js"></script>
 </body>
+
 </html>
