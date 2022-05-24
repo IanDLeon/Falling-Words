@@ -109,3 +109,123 @@ gameController.prototype.addWord = function () {
     return word;
 }
 
+/* -------------- Game Logic ---------------- */
+
+//Main program loop
+function mainLoop() {
+    requestAnimationFrame(mainLoop);
+  
+    now = Date.now();
+    elapsed = now - then; // if enough time has elapsed, draw the next frame
+    if (elapsed > fpsInterval) {
+        // Get ready for next frame by setting then=now, but also adjust for 
+        // specified fpsInterval not being a multiple of RAF's interval (16.7ms)
+        then = now - (elapsed % fpsInterval);
+  
+        updatePositions(controller); //Update all word locations!
+        updateWords(controller); //Checks for completed words
+        draw(controller); //Draw to the screen!
+        if (controller.health <= 0) { gameOver(); } //Run game over if health is 0
+  
+        if (controller.gameRunning) {
+            requestAnimationFrame(mainLoop); //Loop again when browser is ready. 60FPS if possible
+        }
+    }
+  }
+  
+  function updatePositions(gameController) {
+    var wordsArr = gameController.wordContainer;
+    var multiplier = 1.0;
+    if (gameController.doubleTime) { multiplier = multiplier * 1.25; }
+    if (gameController.slowMo) { multiplier = multiplier / 2; }
+  
+    for (var i = 0; i < wordsArr.length; i++) {
+        var currentWord = wordsArr[i];
+        if (currentWord === undefined) { //Catch errors
+            return;
+        }
+  
+        currentWord.y += currentWord.speed * multiplier;
+  
+        if (gameController.cascade) {
+            currentWord.x += currentWord.cascadeDir;
+            if (currentWord.x > gameController.canvas.width - 100 || currentWord.x < 10) {
+                currentWord.cascadeDir = (currentWord.cascadeDir * -2);
+                if (currentWord.cascadeDir > 20 || currentWord.cascadeDir < -20) {
+                    currentWord.cascadeDir = currentWord.cascadeDir * 0.5;
+                }
+            }
+        }
+  
+        if (currentWord.y >= gameController.canvas.height - 10) {
+            gameController.health -= currentWord.value;
+            wordsArr.splice(i, 1);
+            if (currentWord.text.startsWith(gameController.buffer)) { gameController.buffer = ''; } //Only reset buffer if it is current word
+        }
+    }
+  }
+  
+  function updateWords(gameController) {
+    var wordsArr = gameController.wordContainer;
+  
+    for (var i = 0; i < wordsArr.length; i++) {
+        var currentWord = wordsArr[i];
+        if (currentWord === undefined) {
+            return;//Catch errors
+        }
+        if (currentWord.text == gameController.buffer) { // If complete buffer word found in array
+            wordsArr.splice(i, 1);
+            gameController.score += currentWord.value * gameController.scoreMultiplier;
+            gameController.wpm += (currentWord.value / 10);
+            if (gameController.buffer == "CLEAR") {
+                gameController.clears++;
+            }
+            if (gameController.buffer == "MODIFIER") {
+                gameController.modChance = 0;
+                randomModifier(gameController);
+            }
+            gameController.buffer = ''; //Reset buffer
+            return;
+        }
+    }
+  }
+  
+  function draw(gameController) {
+    var canvas = gameController.canvas;
+    clear(canvas, '#111111'); //Clear the canvas
+  
+    var ctx = canvas.getContext('2d');
+    ctx.font = "30px Arial";
+    ctx.strokeStyle = '#FFFFFF';
+    ctx.fillStyle = '#FF0000';
+  
+    if (gameController.blur) { canvas.style.webkitFilter = "blur(2px)"; } //Blur effect!
+    else{
+        canvas.style.webkitFilter = "blur(0px)";  //Blur effect!
+    }
+  
+    var wordsArr = gameController.wordContainer;
+    for (var i = 0; i < wordsArr.length; i++) {
+        var currentWord = wordsArr[i];
+        if (currentWord === undefined) { //Catch errors
+            return;
+        }
+        var text = currentWord.text;
+  
+        ctx.strokeText(currentWord.text, currentWord.x, currentWord.y);
+  
+        if (currentWord.text == "CLEAR") {
+            ctx.fillStyle = '#0000FF';
+            ctx.fillText(currentWord.text, currentWord.x, currentWord.y);
+            ctx.fillStyle = '#FF0000';
+        }
+        if (currentWord.text.startsWith(gameController.buffer)) { //Fill characters of words matching buffer...
+            ctx.fillText(gameController.buffer, currentWord.x, currentWord.y);
+        }
+  
+        if (debugDrawFlag) {
+            console.log("Drawing " + currentWord.text + " @ " + currentWord.x + " , " + currentWord.y)
+        }
+  
+    }
+    
