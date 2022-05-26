@@ -266,3 +266,56 @@ function mainLoop() {
 
   rainDraw();
 }
+
+function gameOver() {
+    clear(controller.canvas, '#111111');
+    var canvas = controller.canvas;
+    clear(canvas, '#111111'); //Clear the canvas
+  
+    var ctx = canvas.getContext('2d');
+    ctx.font = "60px Arial";
+    ctx.strokeStyle = '#000000';
+    ctx.fillStyle = '#BBBBBB';
+  
+    var xCenter = (canvas.width / 2) - 250;
+    var yCenter = canvas.height / 2;
+    ctx.fillText("Game Over!", xCenter, yCenter)
+    ctx.fillText("Score: " + controller.score, xCenter, yCenter + 75)
+    ctx.fillText("Press <Spacebar> to continue", xCenter - 250, yCenter + 150)
+  
+    controller.gameRunning = false;
+  
+  }
+  function resetGame() {
+    controller = new gameController(canvas);
+    controller.resetModifiers();
+    setTimeout(controller.addWord, 1000);
+    requestAnimationFrame(mainLoop);
+  
+    var temp = document.getElementsByClassName("menu-text");
+    for(var i = 0; i < temp.length; i++){
+        temp[i].className = "menu-text text-center fadeOut";
+    }
+        
+  }
+  function useClear(gameController) {
+    gameController.clearChance = gameController.clearChance / 2;
+    gameController.clears--;
+    controller.wordContainer = []; //Empty the whole dang container
+    gameController.buffer = ''; //Reset buffer
+    gameController.resetModifiers();
+  }
+  
+  
+  /* =========== Start of Code ==================*/
+  var fps, fpsInterval, startTime, now, then, elapsed;
+  fps = 60;
+  var canvas = setupCanvas();
+  var controller = new gameController(canvas);
+  controller.gameRunning = false;
+  
+  fpsInterval = 1000 / fps;
+  then = Date.now();
+  startTime = then;
+  
+  mainLoop();
