@@ -228,4 +228,41 @@ function mainLoop() {
         }
   
     }
-    
+
+    //Health bar
+  ctx.fillStyle = "#00DD11";
+  ctx.fillRect(10, gameController.canvas.height - 75, (gameController.health / 100) * (gameController.canvas.width - 40), 35);
+  ctx.fillStyle = "#111111"; //Set back for clearing screen? Doesn't work if we dont do this...
+  //
+
+  if (debugFlag) {
+      ctx.strokeText(gameController.buffer, 10, gameController.canvas.height - 100);
+      ctx.strokeText("Score: " + String(gameController.score), 200, gameController.canvas.height - 100)
+  } else {
+      ctx.strokeText("Score: " + String(gameController.score), 10, gameController.canvas.height - 100)
+  }
+  ctx.strokeText("Clears: " + String(gameController.clears), 10, gameController.canvas.height - 150)
+
+  // Modifiers
+  ctx.strokeStyle = '#FFFF00';
+  var pad = 200;
+  var padPer = 50;
+  if (gameController.doubleTime) { ctx.strokeText("Double Time", pad, gameController.canvas.height - 100); }
+  pad += ctx.measureText('Double Time').width+ padPer;
+  if (gameController.slowMo) { ctx.strokeText("Slow Mo", pad, gameController.canvas.height - 100); }
+  pad += ctx.measureText('Slow Mo').width+ padPer;
+  if (gameController.downpour) { ctx.strokeText("Downpour", pad, gameController.canvas.height - 100); }
+  pad += ctx.measureText('Downpour').width+ padPer;
+  if (gameController.cascade) { ctx.strokeText("Cascade", pad, gameController.canvas.height - 100); }
+  pad += ctx.measureText('Cascase').width+ padPer;
+  if (gameController.overload) { ctx.strokeText("Overload", pad, gameController.canvas.height - 100); }
+  pad += ctx.measureText('Overload').width+ padPer;
+  if (gameController.blur) { ctx.strokeText("Blur", pad, gameController.canvas.height - 100); }
+  pad += ctx.measureText('Blur').width+ padPer;
+  if (gameController.upPour) { ctx.strokeText("UpPour", pad, gameController.canvas.height - 100); }
+  pad += ctx.measureText('YpPour').width+ padPer;
+
+  if (debugDrawFlag) { console.log("Draw Complete.") }
+
+  rainDraw();
+}
