@@ -319,3 +319,213 @@ function gameOver() {
   startTime = then;
   
   mainLoop();
+
+  /* ----------------- Utility Functions ----------------*/
+
+function getWidth() { //This function finds the width of the browser window... since it is different for all browsers
+    if (self.innerWidth) {
+        return self.innerWidth;
+    }
+  
+    if (document.documentElement && document.documentElement.clientWidth) {
+        return document.documentElement.clientWidth;
+    }
+  
+    if (document.body) {
+        return document.body.clientWidth;
+    }
+  }
+  
+  function getHeight() {//This function finds the height of the browser window... since it is different for all browsers
+    if (self.innerHeight) {
+        return self.innerHeight;
+    }
+  
+    if (document.documentElement && document.documentElement.clientHeight) {
+        return document.documentElement.clientHeight;
+    }
+  
+    if (document.body) {
+        return document.body.clientHeight;
+    }
+  }
+  
+  function clear(canvas, fillstyle) {
+    var ctx = canvas.getContext("2d");
+    ctx.fillstyle = fillstyle;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  }
+  
+  
+  document.onkeypress = function (evt) { // This function will run when any k ey is pressed!
+    evt = evt || window.event;
+    var charCode = evt.keyCode || evt.which;
+    var charStr = String.fromCharCode(charCode);
+  
+    if (debugFlag) { console.log("Key pressed: " + charStr); }
+  
+    addKeyToBuffer(charStr);
+  
+    if ((!controller.gameRunning) && charCode == 32) { //spacebar
+        resetGame();
+    }
+  
+    if ((controller.gameRunning) && charCode == 32 && controller.clears > 0) { //spacebar
+        useClear(controller);;
+    }
+  };
+  
+  function addKeyToBuffer(char) {
+    var wordsArr = controller.wordContainer;
+    for (var i = 0; i < wordsArr.length; i++) {
+        var currentWord = wordsArr[i];
+        if (currentWord.text.startsWith(controller.buffer + char)) { //If we drop in here, we have found a matching word to the buffer
+            controller.buffer += char;
+            if (debugFlag) { console.log("Adding: " + char + " to the buffer. Buffer now: " + controller.buffer); }
+            return controller.buffer;
+        }
+    }
+  
+    if (debugFlag) { console.log("Not adding: " + char + " to the buffer;"); }
+  }
+  
+  function rain() {
+    this.drops = [];
+  }
+  function drop(x, y) {
+    this.x = x;
+    this.y = y;
+  }
+
+  /* ------------------ Modifiers!!! -------------------*/
+function randomModifier(gameController) {
+    var modifierAmt = 7;
+  
+    var selection = Math.random() * modifierAmt;
+  
+    if (selection <= 1) { // Doubletime!
+        gameController.doubleTime = !gameController.doubleTime;
+    }
+    if (selection > 1 && selection <= 2) { // Slow Mo!
+        gameController.slowMo = !gameController.slowMo;
+    }
+    if (selection > 2 && selection <= 3) { // Downpour!
+        gameController.downpour = !gameController.downpour;
+        if (gameController.downpour) { downpour(true); }
+        else { downpour(false); }
+    }
+    if (selection > 3 && selection <= 4) { // Cascade!
+        gameController.cascade = !gameController.cascade;
+    }
+    if (selection > 4 && selection <= 5) { // Overload!
+        gameController.overload = !gameController.overload;
+    }
+    if (selection > 5 && selection <= 6) { // Blur!!
+        gameController.blur = !gameController.blur;
+    }
+    if (selection > 6 && selection <= 7) { // upPour!!
+        gameController.upPour = !gameController.upPour;
+    }
+  }
+  
+  
+  
+  // Rain functions
+  if (canvas.getContext) {
+    var ctx = canvas.getContext('2d');
+    var w = canvas.width;
+    var h = canvas.height;
+    ctx.strokeStyle = 'rgba(174,194,224,0.5)';
+    ctx.lineWidth = 1;
+    ctx.lineCap = 'round';
+  
+  
+    var init = [];
+    var maxParts = 200;
+    for (var a = 0; a < maxParts; a++) {
+        init.push({
+            x: Math.random() * w,
+            y: Math.random() * h,
+            l: Math.random() * 1,
+            xs: -4 + Math.random() * 4 + 2,
+            ys: Math.random() * 10 + 10
+        })
+    }
+  
+    function downpour(boolean) {
+        if (boolean) {
+            for (var a = 0; a < 1000; a++) {
+                init.push({
+                    x: Math.random() * w,
+                    y: Math.random() * h,
+                    l: Math.random() * 1,
+                    xs: -4 + Math.random() * 4 + 2,
+                    ys: Math.random() * 10 + 10
+                })
+            }
+            particles = [];
+            for (var b = 0; b < 1000; b++) {
+                particles[b] = init[b];
+            }
+        } else {
+            if (init.length > 200) {
+                for (var a = 0; a < 1000; a++) {
+                    init.pop();
+                }
+            }
+  
+            particles = [];
+            for (var b = 0; b < maxParts; b++) {
+                particles[b] = init[b];
+            }
+        }
+  
+    }
+  
+  
+    var particles = [];
+    for (var b = 0; b < maxParts; b++) {
+        particles[b] = init[b];
+    }
+  
+    function rainDraw() {
+        for (var c = 0; c < particles.length; c++) {
+            var p = particles[c];
+            ctx.strokeStyle = "#0055FF";
+            if (controller.overload) {
+                ctx.strokeStyle = '#' + (Math.random() * 0xFFFFFF << 0).toString(16);
+            }
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            if(controller.upPour){
+                ctx.lineTo(p.x + p.l * p.xs, p.y + p.l * (-1 * p.ys));
+            }else{
+               ctx.lineTo(p.x + p.l * p.xs, p.y + p.l * p.ys); 
+            }
+            ctx.stroke();
+        }
+        rainMove();
+    }
+  
+    function rainMove() {
+        for (var b = 0; b < particles.length; b++) {
+            var p = particles[b];
+            p.x += p.xs;
+            
+            if(controller.upPour){
+                p.y -= p.ys;
+                if (p.x > w || p.y < 0) {
+                    p.x = Math.random() * w;
+                    p.y = h + 20;
+                }
+            }else{
+                p.y += p.ys;
+                if (p.x > w || p.y > h) {
+                    p.x = Math.random() * w;
+                    p.y = -20;
+                }
+            }
+            
+        }
+    }
+  }
